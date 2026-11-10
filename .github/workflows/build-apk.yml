@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # ช่วยให้กดปุ่มสั่งรันเองได้จากหน้าเว็บ GitHub
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,17 +19,24 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: ตรวจสอบโครงสร้างไฟล์ (สำหรับ Debug)
+        run: ls -la
+
       - name: ตั้งค่า Gradle และ Cache
         uses: gradle/actions/setup-gradle@v3
+        with:
+          build-root-directory: android # เปลี่ยนเป็นชื่อโฟลเดอร์ที่มีไฟล์ gradlew (ถ้ามี)
 
       - name: ให้สิทธิ์รันไฟล์ gradlew
+        working-directory: android # ระบุโฟลเดอร์ย่อยตรงนี้
         run: chmod +x gradlew
 
       - name: สั่งบิลด์ไฟล์ Debug APK
+        working-directory: android # ระบุโฟลเดอร์ย่อยตรงนี้
         run: ./gradlew assembleDebug
 
       - name: อัปโหลดไฟล์ APK เก็บไว้ใน Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: '**/build/outputs/apk/debug/*.apk'
