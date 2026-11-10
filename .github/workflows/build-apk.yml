@@ -1,16 +1,22 @@
-name: Check Repository Files
+name: Inspect Repository Structure
 
 on:
+  push:
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: แสดงรายชื่อไฟล์ทั้งหมด
+      - name: List All Files
         run: |
+          echo "=== CURRENT DIRECTORY ==="
           pwd
+          echo "=== FILES IN ROOT ==="
           ls -la
+          echo "=== SEARCH FOR BUILD FILES ==="
+          find . -maxdepth 3 -not -path '*/.*'
